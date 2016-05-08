@@ -59,7 +59,8 @@ public class GeoHashUtil {
         return geoHashes;
     }
 
-    /*private*/ static boolean boundingBoxesIntersect(BoundingBox bBox1, BoundingBox bBox2) {
+    /*private*/
+    static boolean boundingBoxesIntersect(BoundingBox bBox1, BoundingBox bBox2) {
         if ((bBox1.getMinLat() > bBox2.getMaxLat())
                 || (bBox1.getMaxLat() < bBox2.getMinLat())
                 || (bBox1.getMinLong() > bBox2.getMaxLong())
@@ -111,13 +112,13 @@ public class GeoHashUtil {
 
     private static GeoHashBBox[] getNextZoomLevelGeoHash(GeoHashBBox geoHashBBox) {
         GeoHashBBox[] geoHashBBoxes = new GeoHashBBox[4];
-        double midLat = (geoHashBBox.bBox.getMaxLat() + geoHashBBox.bBox.getMinLat())/2;
-        double midLong = (geoHashBBox.bBox.getMaxLong() + geoHashBBox.bBox.getMinLong())/2;
+        double midLat = (geoHashBBox.bBox.getMaxLat() + geoHashBBox.bBox.getMinLat()) / 2;
+        double midLong = (geoHashBBox.bBox.getMaxLong() + geoHashBBox.bBox.getMinLong()) / 2;
         geoHashBBoxes[0] = new GeoHashBBox(geoHashBBox.geoHash << 2 | BOTTOM_LEFT_QUAD, new BoundingBox(geoHashBBox.bBox.getMinLat(),
                 geoHashBBox.bBox.getMinLong(), midLat, midLong));
         geoHashBBoxes[1] = new GeoHashBBox(geoHashBBox.geoHash << 2 | TOP_RIGHT_QUAD, new BoundingBox(midLat, midLong, geoHashBBox.bBox.getMaxLat(),
                 geoHashBBox.bBox.getMaxLong()));
-        geoHashBBoxes[2] = new GeoHashBBox(geoHashBBox.geoHash << 2 | BOTTOM_RIGHT_QUAD, new BoundingBox(geoHashBBox.bBox.getMinLat(), midLong, midLat ,
+        geoHashBBoxes[2] = new GeoHashBBox(geoHashBBox.geoHash << 2 | BOTTOM_RIGHT_QUAD, new BoundingBox(geoHashBBox.bBox.getMinLat(), midLong, midLat,
                 geoHashBBox.bBox.getMaxLong()));
         geoHashBBoxes[3] = new GeoHashBBox(geoHashBBox.geoHash << 2 | TOP_LEFT_QUAD, new BoundingBox(midLat, geoHashBBox.bBox.getMinLong(),
                 geoHashBBox.bBox.getMaxLat(), midLong));
