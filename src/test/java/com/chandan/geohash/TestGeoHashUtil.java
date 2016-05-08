@@ -37,7 +37,7 @@ public class TestGeoHashUtil {
         long[] geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 2);
         Arrays.stream(geoHashes).forEach((geoHash) -> System.out.print(Long.toBinaryString(geoHash) + " "));
         bBox = new BoundingBox(44.0, 46.0, 50.0, 50.0);
-        geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 2);
+        geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 3);
         Arrays.stream(geoHashes).forEach((geoHash) -> System.out.print(Long.toBinaryString(geoHash) + " "));
     }
 }

@@ -25,27 +25,29 @@ public class GeoHashUtil {
     }
 
     public static long[] geoHashesForBoundingBox(BoundingBox bBox, int zoomLevel) {
-        if (zoomLevel < 0) {
-            throw new IllegalArgumentException("zoomLevel should be >= 0");
-        }
+        checkZoomLevel(zoomLevel);
         checkBoundingBox(bBox);
         Queue<GeoHashBBox> geoHashBBoxQueue = new LinkedList<>();
         geoHashBBoxQueue.offer(new GeoHashBBox(0, new BoundingBox(-90.0, -180, 90.0, 180)));
         int currentZoomLevel = 0;
-        while (currentZoomLevel < zoomLevel/* || !geoHashBBoxQueue.isEmpty()*/) {
-            GeoHashBBox[] geoHashBBoxes = getNextZoomLevelGeoHash(geoHashBBoxQueue.poll());
-            if (boundingBoxesIntersect(geoHashBBoxes[0].bBox, bBox)) {
-                geoHashBBoxQueue.offer(geoHashBBoxes[0]);
+        while (currentZoomLevel < zoomLevel) {
+            Queue<GeoHashBBox> tempQueue = new LinkedList<>();
+            while (!geoHashBBoxQueue.isEmpty()) {
+                GeoHashBBox[] geoHashBBoxes = getNextZoomLevelGeoHash(geoHashBBoxQueue.poll());
+                if (boundingBoxesIntersect(geoHashBBoxes[0].bBox, bBox)) {
+                    tempQueue.offer(geoHashBBoxes[0]);
+                }
+                if (boundingBoxesIntersect(geoHashBBoxes[1].bBox, bBox)) {
+                    tempQueue.offer(geoHashBBoxes[1]);
+                }
+                if (boundingBoxesIntersect(geoHashBBoxes[2].bBox, bBox)) {
+                    tempQueue.offer(geoHashBBoxes[2]);
+                }
+                if (boundingBoxesIntersect(geoHashBBoxes[3].bBox, bBox)) {
+                    tempQueue.offer(geoHashBBoxes[3]);
+                }
             }
-            if (boundingBoxesIntersect(geoHashBBoxes[1].bBox, bBox)) {
-                geoHashBBoxQueue.offer(geoHashBBoxes[1]);
-            }
-            if (boundingBoxesIntersect(geoHashBBoxes[2].bBox, bBox)) {
-                geoHashBBoxQueue.offer(geoHashBBoxes[2]);
-            }
-            if (boundingBoxesIntersect(geoHashBBoxes[3].bBox, bBox)) {
-                geoHashBBoxQueue.offer(geoHashBBoxes[3]);
-            }
+            geoHashBBoxQueue.addAll(tempQueue);
             currentZoomLevel++;
         }
         long[] geoHashes = new long[geoHashBBoxQueue.size()];
