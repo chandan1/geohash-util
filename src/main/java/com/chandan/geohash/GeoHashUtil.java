@@ -8,7 +8,7 @@ import java.util.Queue;
  * Created by chandan on 5/8/16.
  */
 public class GeoHashUtil {
-    private final static int MAX_ZOOM_LEVEL = 20;
+    private final static int MAX_ZOOM_LEVEL = 30;
     private final static int BOTTOM_LEFT_QUAD = 0b00;
     private final static int BOTTOM_RIGHT_QUAD = 0b10;
     private final static int TOP_RIGHT_QUAD = 0b11;
@@ -25,27 +25,14 @@ public class GeoHashUtil {
     }
 
     public static long[] geoHashesForBoundingBox(BoundingBox bBox, int zoomLevel) {
-        if (zoomLevel <= 1) {
-            throw new IllegalArgumentException("zoomLevel should be greater than 1");
+        if (zoomLevel < 0) {
+            throw new IllegalArgumentException("zoomLevel should be >= 0");
         }
-        if (bBox == null) {
-            throw new IllegalArgumentException("bBox cannot be null");
-        }
-        if (bBox.getMinLat() >= bBox.getMaxLat()) {
-            throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be less than maxLat : {1}",
-                    new Object[]{bBox.getMinLat(), bBox.getMaxLat()}));
-        }
-        if (bBox.getMinLong() >= bBox.getMaxLong()) {
-            throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be less than maxLong : {1}",
-                    new Object[]{bBox.getMinLong(), bBox.getMaxLong()}));
-        }
-        if (bBox.getMinLat() >= 180 || bBox.getMinLat() < -180) {
-            throw new IllegalArgumentException();
-        }
+        checkBoundingBox(bBox);
         Queue<GeoHashBBox> geoHashBBoxQueue = new LinkedList<>();
         geoHashBBoxQueue.offer(new GeoHashBBox(0, new BoundingBox(-90.0, -180, 90.0, 180)));
-        int currentZoomLevel = 1;
-        while (currentZoomLevel <= zoomLevel || !geoHashBBoxQueue.isEmpty()) {
+        int currentZoomLevel = 0;
+        while (currentZoomLevel < zoomLevel/* || !geoHashBBoxQueue.isEmpty()*/) {
             GeoHashBBox[] geoHashBBoxes = getNextZoomLevelGeoHash(geoHashBBoxQueue.poll());
             if (boundingBoxesIntersect(geoHashBBoxes[0].bBox, bBox)) {
                 geoHashBBoxQueue.offer(geoHashBBoxes[0]);
@@ -78,6 +65,46 @@ public class GeoHashUtil {
             return false;
         }
         return true;
+    }
+
+    private static void checkBoundingBox(BoundingBox bBox) {
+        if (bBox == null) {
+            throw new IllegalArgumentException("bBox cannot be null");
+        }
+        if (bBox.getMinLat() >= bBox.getMaxLat()) {
+            throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be less than maxLat : {1}",
+                    new Object[]{bBox.getMinLat(), bBox.getMaxLat()}));
+        }
+        if (bBox.getMinLong() >= bBox.getMaxLong()) {
+            throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be less than maxLong : {1}",
+                    new Object[]{bBox.getMinLong(), bBox.getMaxLong()}));
+        }
+        if (!(bBox.getMinLat() >= -90.0 && bBox.getMinLat() < 90.0)) {
+            throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be >= -90.0 and < 90.0",
+                    new Object[]{bBox.getMinLat()}));
+        }
+        if (!(bBox.getMaxLat() > -90.0 && bBox.getMaxLat() <= 90.0)) {
+            throw new IllegalArgumentException(MessageFormat.format("maxLat : {0} should be > -90.0 and <= -90",
+                    new Object[]{bBox.getMaxLat()}));
+        }
+        if (!(bBox.getMinLong() >= -180.0 && bBox.getMinLong() < 180)) {
+            throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be >= -180.0 and < 180.0",
+                    new Object[]{bBox.getMinLong()}));
+        }
+        if (!(bBox.getMaxLong() > -180.0 && bBox.getMaxLong() <= 180.0)) {
+            throw new IllegalArgumentException(MessageFormat.format("maxLat : {0} should be > -180.0 and <= 180.0",
+                    new Object[]{bBox.getMaxLong()}));
+        }
+    }
+
+    private static void checkZoomLevel(int zoomLevel) {
+        if (zoomLevel < 0) {
+            throw new IllegalArgumentException("zoomLevel should be >= 0");
+        }
+        if (zoomLevel > MAX_ZOOM_LEVEL) {
+            throw new IllegalArgumentException(MessageFormat.format("zoomLevel should be <= {0}",
+                    new Object[]{zoomLevel}));
+        }
     }
 
     private static GeoHashBBox[] getNextZoomLevelGeoHash(GeoHashBBox geoHashBBox) {

@@ -3,6 +3,8 @@ package com.chandan.geohash;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * Created by chandan on 5/8/16.
  */
@@ -30,7 +32,12 @@ public class TestGeoHashUtil {
     }
 
     @Test
-    public void geoHashesForBoundingBox() {
-        
+    public void geoHashesForBoundingBoxLevel1() {
+        BoundingBox bBox = new BoundingBox(1.0, 1.0, 3.0, 3.0);
+        long[] geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 2);
+        Arrays.stream(geoHashes).forEach((geoHash) -> System.out.print(Long.toBinaryString(geoHash) + " "));
+        bBox = new BoundingBox(44.0, 46.0, 50.0, 50.0);
+        geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 2);
+        Arrays.stream(geoHashes).forEach((geoHash) -> System.out.print(Long.toBinaryString(geoHash) + " "));
     }
 }
