@@ -27,11 +27,11 @@ public class GeoHashUtil {
     public static long[] geoHashesForBoundingBox(BoundingBox bBox, int zoomLevel) {
         checkZoomLevel(zoomLevel);
         checkBoundingBox(bBox);
-        Queue<GeoHashBBox> geoHashBBoxQueue = new LinkedList<>();
+        Queue<GeoHashBBox> geoHashBBoxQueue = new LinkedList<GeoHashBBox>();
         geoHashBBoxQueue.offer(new GeoHashBBox(0, new BoundingBox(-90.0, -180, 90.0, 180)));
         int currentZoomLevel = 0;
         while (currentZoomLevel < zoomLevel) {
-            Queue<GeoHashBBox> tempQueue = new LinkedList<>();
+            Queue<GeoHashBBox> tempQueue = new LinkedList<GeoHashBBox>();
             while (!geoHashBBoxQueue.isEmpty()) {
                 GeoHashBBox[] geoHashBBoxes = getNextZoomLevelGeoHash(geoHashBBoxQueue.poll());
                 if (boundingBoxesIntersect(geoHashBBoxes[0].bBox, bBox)) {
