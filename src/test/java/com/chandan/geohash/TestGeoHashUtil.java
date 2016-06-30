@@ -32,7 +32,7 @@ public class TestGeoHashUtil {
     }
 
     @Test
-    public void geoHashesForBoundingBoxZoomLevel2() {
+    public void testGeoHashesForBoundingBoxZoomLevel2() {
         BoundingBox bBox = new BoundingBox(1.0, 1.0, 3.0, 3.0);
         long[] geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 2);
         Assert.assertEquals(1, geoHashes.length);
@@ -40,7 +40,7 @@ public class TestGeoHashUtil {
     }
 
     @Test
-    public void geoHashesForBoundingBoxZoomLevel3() {
+    public void testGeoHashesForBoundingBoxZoomLevel3() {
         BoundingBox bBox = new BoundingBox(44.0, 46.0, 50.0, 50.0);
         long[] geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 3);
         Assert.assertEquals(2, geoHashes.length);
@@ -49,7 +49,7 @@ public class TestGeoHashUtil {
     }
 
     @Test
-    public void geoHashesForBoundingBoxZoomLevel15() {
+    public void testGeoHashesForBoundingBoxZoomLevel15() {
 
         BoundingBox bBox = new BoundingBox(12.924052, 77.669285, 12.928086, 77.673468);
         long[] geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 15);
