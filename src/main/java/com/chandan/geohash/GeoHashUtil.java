@@ -15,14 +15,15 @@ public class GeoHashUtil {
     private final static int TOP_LEFT_QUAD = 0b01;
 
     private static class GeoHashBBox {
-        private final long geoHash;
-        private final BoundingBox bBox;
+        public final long geoHash;
+        public final BoundingBox bBox;
 
         public GeoHashBBox(long geoHash, BoundingBox bBox) {
             this.geoHash = geoHash;
             this.bBox = bBox;
         }
     }
+
 
     public static long[] geoHashesForBoundingBox(BoundingBox bBox, int zoomLevel) {
         checkZoomLevel(zoomLevel);
@@ -59,12 +60,54 @@ public class GeoHashUtil {
         return geoHashes;
     }
 
+    public static long getNextBottomLeftGeoHash(long geoHash) {
+        return geoHash << 2 | BOTTOM_LEFT_QUAD;
+    }
+
+    public static long getNextBottomRightGeoHash(long geoHash) {
+        return geoHash << 2 | BOTTOM_RIGHT_QUAD;
+    }
+
+    public static long getNextTopLeftGeoHash(long geoHash) {
+        return geoHash << 2 | TOP_LEFT_QUAD;
+    }
+
+    public static long getNextTopRightGeoHash(long geoHash) {
+        return geoHash << 2 | TOP_RIGHT_QUAD;
+    }
+
+    public static BoundingBox getNextBottomLeftBoundingBox(BoundingBox boundingBox) {
+        double midLat = (boundingBox.maxLat + boundingBox.minLat) / 2;
+        double midLong = (boundingBox.maxLong + boundingBox.minLong) / 2;
+        return new BoundingBox(boundingBox.minLat, boundingBox.minLong, midLat, midLong);
+    }
+
+    public static BoundingBox getNextBottomRightBoundingBox(BoundingBox boundingBox) {
+        double midLat = (boundingBox.maxLat + boundingBox.minLat) / 2;
+        double midLong = (boundingBox.maxLong + boundingBox.minLong) / 2;
+        return new BoundingBox(boundingBox.minLat, midLong, midLat, boundingBox.maxLong);
+    }
+
+    public static BoundingBox getNextTopLeftBoundingBox(BoundingBox boundingBox) {
+        double midLat = (boundingBox.maxLat + boundingBox.minLat) / 2;
+        double midLong = (boundingBox.maxLong + boundingBox.minLong) / 2;
+        return new BoundingBox(midLat, boundingBox.minLong,
+                boundingBox.maxLat, midLong);
+    }
+
+    public static BoundingBox getNextTopRightBoundingBox(BoundingBox boundingBox) {
+        double midLat = (boundingBox.maxLat + boundingBox.minLat) / 2;
+        double midLong = (boundingBox.maxLong + boundingBox.minLong) / 2;
+        return new BoundingBox(midLat, midLong, boundingBox.maxLat, boundingBox.maxLong);
+    }
+
+
     /*private*/
     static boolean boundingBoxesIntersect(BoundingBox bBox1, BoundingBox bBox2) {
-        if ((bBox1.getMinLat() > bBox2.getMaxLat())
-                || (bBox1.getMaxLat() < bBox2.getMinLat())
-                || (bBox1.getMinLong() > bBox2.getMaxLong())
-                || (bBox1.getMaxLong() < bBox2.getMinLong())) {
+        if ((bBox1.minLat > bBox2.maxLat)
+                || (bBox1.maxLat < bBox2.minLat)
+                || (bBox1.minLong > bBox2.maxLong)
+                || (bBox1.maxLong < bBox2.minLong)) {
             return false;
         }
         return true;
@@ -74,29 +117,29 @@ public class GeoHashUtil {
         if (bBox == null) {
             throw new IllegalArgumentException("bBox cannot be null");
         }
-        if (bBox.getMinLat() >= bBox.getMaxLat()) {
+        if (bBox.minLat >= bBox.maxLat) {
             throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be less than maxLat : {1}",
-                    new Object[]{bBox.getMinLat(), bBox.getMaxLat()}));
+                    new Object[]{bBox.minLat, bBox.maxLat}));
         }
-        if (bBox.getMinLong() >= bBox.getMaxLong()) {
+        if (bBox.minLong >= bBox.maxLong) {
             throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be less than maxLong : {1}",
-                    new Object[]{bBox.getMinLong(), bBox.getMaxLong()}));
+                    new Object[]{bBox.minLong, bBox.maxLong}));
         }
-        if (!(bBox.getMinLat() >= -90.0 && bBox.getMinLat() < 90.0)) {
+        if (!(bBox.minLat >= -90.0 && bBox.minLat < 90.0)) {
             throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be >= -90.0 and < 90.0",
-                    new Object[]{bBox.getMinLat()}));
+                    new Object[]{bBox.minLat}));
         }
-        if (!(bBox.getMaxLat() > -90.0 && bBox.getMaxLat() <= 90.0)) {
+        if (!(bBox.maxLat > -90.0 && bBox.maxLat <= 90.0)) {
             throw new IllegalArgumentException(MessageFormat.format("maxLat : {0} should be > -90.0 and <= -90",
-                    new Object[]{bBox.getMaxLat()}));
+                    new Object[]{bBox.maxLat}));
         }
-        if (!(bBox.getMinLong() >= -180.0 && bBox.getMinLong() < 180)) {
+        if (!(bBox.minLong >= -180.0 && bBox.minLong < 180)) {
             throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be >= -180.0 and < 180.0",
-                    new Object[]{bBox.getMinLong()}));
+                    new Object[]{bBox.minLong}));
         }
-        if (!(bBox.getMaxLong() > -180.0 && bBox.getMaxLong() <= 180.0)) {
+        if (!(bBox.maxLong > -180.0 && bBox.maxLong <= 180.0)) {
             throw new IllegalArgumentException(MessageFormat.format("maxLat : {0} should be > -180.0 and <= 180.0",
-                    new Object[]{bBox.getMaxLong()}));
+                    new Object[]{bBox.maxLong}));
         }
     }
 
@@ -112,16 +155,10 @@ public class GeoHashUtil {
 
     private static GeoHashBBox[] getNextZoomLevelGeoHash(GeoHashBBox geoHashBBox) {
         GeoHashBBox[] geoHashBBoxes = new GeoHashBBox[4];
-        double midLat = (geoHashBBox.bBox.getMaxLat() + geoHashBBox.bBox.getMinLat()) / 2;
-        double midLong = (geoHashBBox.bBox.getMaxLong() + geoHashBBox.bBox.getMinLong()) / 2;
-        geoHashBBoxes[0] = new GeoHashBBox(geoHashBBox.geoHash << 2 | BOTTOM_LEFT_QUAD, new BoundingBox(geoHashBBox.bBox.getMinLat(),
-                geoHashBBox.bBox.getMinLong(), midLat, midLong));
-        geoHashBBoxes[1] = new GeoHashBBox(geoHashBBox.geoHash << 2 | TOP_RIGHT_QUAD, new BoundingBox(midLat, midLong, geoHashBBox.bBox.getMaxLat(),
-                geoHashBBox.bBox.getMaxLong()));
-        geoHashBBoxes[2] = new GeoHashBBox(geoHashBBox.geoHash << 2 | BOTTOM_RIGHT_QUAD, new BoundingBox(geoHashBBox.bBox.getMinLat(), midLong, midLat,
-                geoHashBBox.bBox.getMaxLong()));
-        geoHashBBoxes[3] = new GeoHashBBox(geoHashBBox.geoHash << 2 | TOP_LEFT_QUAD, new BoundingBox(midLat, geoHashBBox.bBox.getMinLong(),
-                geoHashBBox.bBox.getMaxLat(), midLong));
+        geoHashBBoxes[0] = new GeoHashBBox(getNextBottomLeftGeoHash(geoHashBBox.geoHash), getNextBottomLeftBoundingBox(geoHashBBox.bBox));
+        geoHashBBoxes[1] = new GeoHashBBox(getNextTopRightGeoHash(geoHashBBox.geoHash), getNextTopRightBoundingBox(geoHashBBox.bBox));
+        geoHashBBoxes[2] = new GeoHashBBox(getNextBottomRightGeoHash(geoHashBBox.geoHash), getNextBottomRightBoundingBox(geoHashBBox.bBox));
+        geoHashBBoxes[3] = new GeoHashBBox(getNextTopLeftGeoHash(geoHashBBox.geoHash), getNextTopLeftBoundingBox(geoHashBBox.bBox));
         return geoHashBBoxes;
     }
 }
