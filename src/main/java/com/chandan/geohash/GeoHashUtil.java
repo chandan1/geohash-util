@@ -101,6 +101,10 @@ public class GeoHashUtil {
         return new BoundingBox(midLat, midLong, boundingBox.maxLat, boundingBox.maxLong);
     }
 
+    public static long getParentGeoHash(long geoHash) {
+        return geoHash >> 2;
+    }
+
 
     /*private*/
     static boolean boundingBoxesIntersect(BoundingBox bBox1, BoundingBox bBox2) {
