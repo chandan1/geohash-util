@@ -60,6 +60,36 @@ public class GeoHashUtil {
         return geoHashes;
     }
 
+    public static BoundingBox getBoundingBoxFromGeoHash(long geoHash, int zoomLevel) {
+        checkZoomLevel(zoomLevel);
+        double minLat = -90.0;
+        double minLng = -180.0;
+        double maxLat = 90.0;
+        double maxLng = 180.0;
+        long highestBit = 1 << (zoomLevel << 1);
+        for (int i = 1; i <= zoomLevel; i++) {
+            double midLat = (minLat + maxLat)/2;
+            double midLng = (minLng + maxLng)/2;
+            highestBit = highestBit >> 1;
+            if ((geoHash & highestBit) == highestBit) {
+                // right
+                minLng = midLng;
+            } else {
+                // left
+                maxLng = midLng;
+            }
+            highestBit = highestBit >> 1;
+            if ((geoHash & highestBit) == highestBit) {
+                //top
+                minLat = midLat;
+            } else {
+                //bottom
+                maxLat = midLat;
+            }
+        }
+        return new BoundingBox(minLat, minLng, maxLat, maxLng);
+    }
+
     public static long getNextBottomLeftGeoHash(long geoHash) {
         return geoHash << 2 | BOTTOM_LEFT_QUAD;
     }

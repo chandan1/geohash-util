@@ -54,9 +54,31 @@ public class TestGeoHashUtil {
         BoundingBox bBox = new BoundingBox(12.924052, 77.669285, 12.928086, 77.673468);
         long[] geoHashes = GeoHashUtil.geoHashesForBoundingBox(bBox, 15);
         Assert.assertEquals(4, geoHashes.length);
+        for (int i = 0; i < geoHashes.length; i++) {
+            System.out.printf(" " + geoHashes[i]);
+        }
+        // geohash
+        //tdr1x3
         Assert.assertEquals("110010110010111000011110100011", Long.toBinaryString(geoHashes[0]));
+        //tdr1x2
         Assert.assertEquals("110010110010111000011110100010", Long.toBinaryString(geoHashes[1]));
+        //tdr1x8
         Assert.assertEquals("110010110010111000011110101000", Long.toBinaryString(geoHashes[2]));
+        //tdr1x9
         Assert.assertEquals("110010110010111000011110101001", Long.toBinaryString(geoHashes[3]));
+    }
+
+    @Test
+    public void testBoundingBoxFromGeoHashZoomLevel15() {
+        BoundingBox boundingBox = GeoHashUtil.getBoundingBoxFromGeoHash(852199331, 15);
+        Assert.assertEquals(12.9254150390625, boundingBox.minLat, 0);
+        Assert.assertEquals(77.662353515625, boundingBox.minLong, 0);
+        Assert.assertEquals(12.930908203125, boundingBox.maxLat, 0);
+        Assert.assertEquals(77.67333984375, boundingBox.maxLong, 0);
+        boundingBox = GeoHashUtil.getBoundingBoxFromGeoHash(852199330, 15);
+        Assert.assertEquals(12.919921875, boundingBox.minLat, 0);
+        Assert.assertEquals(77.662353515625, boundingBox.minLong, 0);
+        Assert.assertEquals(12.9254150390625, boundingBox.maxLat, 0);
+        Assert.assertEquals(77.67333984375, boundingBox.maxLong, 0);
     }
 }

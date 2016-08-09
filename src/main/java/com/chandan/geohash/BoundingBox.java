@@ -15,4 +15,14 @@ public class BoundingBox {
         this.maxLat = maxLat;
         this.maxLong = maxLong;
     }
+
+	@Override
+	public String toString() {
+		return "BoundingBox{" +
+				"minLat=" + minLat +
+				", minLong=" + minLong +
+				", maxLat=" + maxLat +
+				", maxLong=" + maxLong +
+				'}';
+	}
 }
