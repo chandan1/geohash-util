@@ -29,7 +29,7 @@ public class GeoHashUtil {
         checkZoomLevel(zoomLevel);
         checkBoundingBox(bBox);
         Queue<GeoHashBBox> geoHashBBoxQueue = new LinkedList<GeoHashBBox>();
-        geoHashBBoxQueue.offer(new GeoHashBBox(0, new BoundingBox(-90.0, -180, 90.0, 180)));
+        geoHashBBoxQueue.offer(new GeoHashBBox(1, new BoundingBox(-90.0, -180, 90.0, 180)));
         int currentZoomLevel = 0;
         while (currentZoomLevel < zoomLevel) {
             Queue<GeoHashBBox> tempQueue = new LinkedList<GeoHashBBox>();
@@ -60,13 +60,13 @@ public class GeoHashUtil {
         return geoHashes;
     }
 
-    public static BoundingBox getBoundingBoxFromGeoHash(long geoHash, int zoomLevel) {
-        checkZoomLevel(zoomLevel);
+    public static BoundingBox getBoundingBoxFromGeoHash(long geoHash) {
         double minLat = -90.0;
         double minLng = -180.0;
         double maxLat = 90.0;
         double maxLng = 180.0;
-        long highestBit = 1 << (zoomLevel << 1);
+        int zoomLevel = Long.toBinaryString(geoHash).length()/2;
+        long highestBit = Long.highestOneBit(geoHash);
         for (int i = 1; i <= zoomLevel; i++) {
             double midLat = (minLat + maxLat)/2;
             double midLng = (minLng + maxLng)/2;
