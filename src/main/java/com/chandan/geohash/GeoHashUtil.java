@@ -1,8 +1,7 @@
 package com.chandan.geohash;
 
 import java.text.MessageFormat;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by chandan on 5/8/16.
@@ -59,6 +58,42 @@ public class GeoHashUtil {
         }
         return geoHashes;
     }
+
+    public static long[] geoHashesForGeohash(long geoHash, int zoomLevel) {
+        checkZoomLevel(zoomLevel);
+        int currentZoomLevel = Long.toBinaryString(geoHash).length()/2;
+        if (currentZoomLevel > zoomLevel) {
+            throw new IllegalArgumentException("current zoom level should be less than equal to zoomlevel");
+        }
+        if (currentZoomLevel == zoomLevel) {
+            return new long[]{geoHash};
+        }
+        int diffZoomLevel = zoomLevel - currentZoomLevel;
+        long[] geoHashes = new long[1 << (diffZoomLevel << 1)];
+        geoHashes[0] = geoHash;
+        for (int i = 1; i < geoHashes.length; i*=4) {
+            for (int j = i - 1; j >= 0; j-=1) {
+                long bottomLeft = getNextBottomLeftGeoHash(geoHashes[j]);
+                long bottomRight = getNextBottomRightGeoHash(geoHashes[j]);
+                long topRight = getNextTopLeftGeoHash(geoHashes[j]);
+                long topLeft = getNextTopRightGeoHash(geoHashes[j]);
+                int k = (j + 1)*4 - 1;
+                geoHashes[k] = bottomLeft;
+                geoHashes[k-1] = bottomRight;
+                geoHashes[k-2] = topLeft;
+                geoHashes[k-3] = topRight;
+            }
+        }
+        return geoHashes;
+    }
+
+    public static int getZoomLevelFromGeohash(long geoHash) {
+        return Long.toBinaryString(geoHash).length()/2;
+    }
+
+
+
+
 
     public static BoundingBox getBoundingBoxFromGeoHash(long geoHash) {
         double minLat = -90.0;
@@ -138,10 +173,10 @@ public class GeoHashUtil {
 
     /*private*/
     static boolean boundingBoxesIntersect(BoundingBox bBox1, BoundingBox bBox2) {
-        if ((bBox1.minLat > bBox2.maxLat)
-                || (bBox1.maxLat < bBox2.minLat)
-                || (bBox1.minLong > bBox2.maxLong)
-                || (bBox1.maxLong < bBox2.minLong)) {
+        if ((bBox1.minLat >= bBox2.maxLat)
+                || (bBox1.maxLat <= bBox2.minLat)
+                || (bBox1.minLong >= bBox2.maxLong)
+                || (bBox1.maxLong <= bBox2.minLong)) {
             return false;
         }
         return true;
