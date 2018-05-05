@@ -173,10 +173,10 @@ public class GeoHashUtil {
 
     /*private*/
     static boolean boundingBoxesIntersect(BoundingBox bBox1, BoundingBox bBox2) {
-        if ((bBox1.minLat >= bBox2.maxLat)
-                || (bBox1.maxLat <= bBox2.minLat)
-                || (bBox1.minLong >= bBox2.maxLong)
-                || (bBox1.maxLong <= bBox2.minLong)) {
+        if ((bBox1.minLat > bBox2.maxLat)
+                || (bBox1.maxLat < bBox2.minLat)
+                || (bBox1.minLong > bBox2.maxLong)
+                || (bBox1.maxLong < bBox2.minLong)) {
             return false;
         }
         return true;
@@ -186,11 +186,11 @@ public class GeoHashUtil {
         if (bBox == null) {
             throw new IllegalArgumentException("bBox cannot be null");
         }
-        if (bBox.minLat >= bBox.maxLat) {
+        if (bBox.minLat > bBox.maxLat) {
             throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be less than maxLat : {1}",
                     new Object[]{bBox.minLat, bBox.maxLat}));
         }
-        if (bBox.minLong >= bBox.maxLong) {
+        if (bBox.minLong > bBox.maxLong) {
             throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be less than maxLong : {1}",
                     new Object[]{bBox.minLong, bBox.maxLong}));
         }
