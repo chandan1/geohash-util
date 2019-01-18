@@ -6,14 +6,14 @@ import java.util.*;
 /**
  * Created by chandan on 5/8/16.
  */
-public class GeoHashUtil {
+public class Util {
     private final static int MAX_ZOOM_LEVEL = 30;
     private final static int BOTTOM_LEFT_QUAD = 0b00;
     private final static int BOTTOM_RIGHT_QUAD = 0b10;
     private final static int TOP_RIGHT_QUAD = 0b11;
     private final static int TOP_LEFT_QUAD = 0b01;
 
-    private static class GeoHashBBox {
+    static class GeoHashBBox {
         public final long geoHash;
         public final BoundingBox bBox;
 
@@ -212,7 +212,8 @@ public class GeoHashUtil {
         }
     }
 
-    private static void checkZoomLevel(int zoomLevel) {
+
+    static void checkZoomLevel(int zoomLevel) {
         if (zoomLevel < 0) {
             throw new IllegalArgumentException("zoomLevel should be >= 0");
         }
