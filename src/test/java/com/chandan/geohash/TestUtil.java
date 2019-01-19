@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Created by chandan on 5/8/16.
  */
-public class TestGeoHashUtil {
+public class TestUtil {
 
     @Test
     public void testBoundingBoxIntersection() {
@@ -33,16 +33,18 @@ public class TestGeoHashUtil {
 
     @Test
     public void testGeoHashesForBoundingBoxZoomLevel2() {
+        BoundingBox world = new BoundingBox(-90.0, -180.0, 90.0, 180.0);
         BoundingBox bBox = new BoundingBox(1.0, 1.0, 3.0, 3.0);
-        long[] geoHashes = Util.geoHashesForBoundingBox(bBox, 2);
+        long[] geoHashes = Util.geoHashesForBoundingBox(world, bBox, 2);
         Assert.assertEquals(1, geoHashes.length);
         Assert.assertEquals("11100", Long.toBinaryString(geoHashes[0]));
     }
 
     @Test
     public void testGeoHashesForBoundingBoxZoomLevel3() {
+        BoundingBox world = new BoundingBox(-90.0, -180.0, 90.0, 180.0);
         BoundingBox bBox = new BoundingBox(44.0, 46.0, 50.0, 50.0);
-        long[] geoHashes = Util.geoHashesForBoundingBox(bBox, 3);
+        long[] geoHashes = Util.geoHashesForBoundingBox(world, bBox, 3);
         Assert.assertEquals(2, geoHashes.length);
         Assert.assertEquals("1110011", Long.toBinaryString(geoHashes[0]));
         Assert.assertEquals("1110110", Long.toBinaryString(geoHashes[1]));
@@ -50,9 +52,9 @@ public class TestGeoHashUtil {
 
     @Test
     public void testGeoHashesForBoundingBoxZoomLevel15() {
-
+        BoundingBox world = new BoundingBox(-90.0, -180.0, 90.0, 180.0);
         BoundingBox bBox = new BoundingBox(12.924052, 77.669285, 12.928086, 77.673468);
-        long[] geoHashes = Util.geoHashesForBoundingBox(bBox, 15);
+        long[] geoHashes = Util.geoHashesForBoundingBox(world, bBox, 15);
         Assert.assertEquals(4, geoHashes.length);
         // geohash
         //tdr1x3
@@ -83,24 +85,12 @@ public class TestGeoHashUtil {
     public void testGeohashFromGeohash() {
         long[] actualGeohashes = Util.geoHashesForGeohash(1, 8);
         Arrays.sort(actualGeohashes);
+        BoundingBox world = new BoundingBox(-90.0, -180.0, 90.0, 180.0);
         BoundingBox bBox = new BoundingBox(-90, -180, 90, 180);
-        long[] expectedGeohashes = Util.geoHashesForBoundingBox(bBox, 8);
+        long[] expectedGeohashes = Util.geoHashesForBoundingBox(world, bBox, 8);
         Arrays.sort(expectedGeohashes);
         Assert.assertArrayEquals(expectedGeohashes, actualGeohashes);
-
-        //expectedGeohashes = Util.geoHashesForBoundingBox(new BoundingBox(-90, -180, 0,0), 10);
-        //Arrays.sort(expectedGeohashes);
         actualGeohashes = Util.geoHashesForGeohash(4, 10);
         Assert.assertEquals(262144, actualGeohashes.length);
-        //Arrays.sort(actualGeohashes);
-        //Assert.assertArrayEquals(expectedGeohashes, actualGeohashes);
     }
-
-    /*
-    public static void main(String[] args) {
-        System.out.println(Long.toBinaryString(852199331));//1925941155
-        System.out.println(Long.parseLong("1110010110010111000011110100011", 2));
-        System.out.println(Long.toBinaryString(852199330));//1925941154
-        System.out.println(Long.parseLong("1110010110010111000011110100010", 2));
-    }*/
 }

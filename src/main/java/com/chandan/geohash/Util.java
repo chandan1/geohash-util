@@ -24,11 +24,12 @@ public class Util {
     }
 
 
-    public static long[] geoHashesForBoundingBox(BoundingBox bBox, int zoomLevel) {
+    public static long[] geoHashesForBoundingBox(BoundingBox world, BoundingBox bBox, int zoomLevel) {
         checkZoomLevel(zoomLevel);
+        checkBoundingBox(world);
         checkBoundingBox(bBox);
         Queue<GeoHashBBox> geoHashBBoxQueue = new LinkedList<GeoHashBBox>();
-        geoHashBBoxQueue.offer(new GeoHashBBox(1, new BoundingBox(-90.0, -180, 90.0, 180)));
+        geoHashBBoxQueue.offer(new GeoHashBBox(1, new BoundingBox(world.minLat, world.minLong, world.maxLat, world.maxLong)));
         int currentZoomLevel = 0;
         while (currentZoomLevel < zoomLevel) {
             Queue<GeoHashBBox> tempQueue = new LinkedList<GeoHashBBox>();
@@ -193,22 +194,6 @@ public class Util {
         if (bBox.minLong > bBox.maxLong) {
             throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be less than maxLong : {1}",
                     new Object[]{bBox.minLong, bBox.maxLong}));
-        }
-        if (!(bBox.minLat >= -90.0 && bBox.minLat < 90.0)) {
-            throw new IllegalArgumentException(MessageFormat.format("minLat : {0} should be >= -90.0 and < 90.0",
-                    new Object[]{bBox.minLat}));
-        }
-        if (!(bBox.maxLat > -90.0 && bBox.maxLat <= 90.0)) {
-            throw new IllegalArgumentException(MessageFormat.format("maxLat : {0} should be > -90.0 and <= -90",
-                    new Object[]{bBox.maxLat}));
-        }
-        if (!(bBox.minLong >= -180.0 && bBox.minLong < 180)) {
-            throw new IllegalArgumentException(MessageFormat.format("minLong : {0} should be >= -180.0 and < 180.0",
-                    new Object[]{bBox.minLong}));
-        }
-        if (!(bBox.maxLong > -180.0 && bBox.maxLong <= 180.0)) {
-            throw new IllegalArgumentException(MessageFormat.format("maxLat : {0} should be > -180.0 and <= 180.0",
-                    new Object[]{bBox.maxLong}));
         }
     }
 
